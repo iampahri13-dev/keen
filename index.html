@@ -13,10 +13,11 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     background: url("https://files.catbox.moe/cx6q08.jpg") no-repeat center center fixed;
     background-size: cover;
+    padding-bottom: 80px; /* space for footer */
 }
 
 @media (min-width: 900px) {
@@ -84,9 +85,8 @@ h2 { margin: 5px 0; font-size: 22px; }
 
 /* List Panel */
 .section { margin-top: 25px; font-weight: bold; font-size: 14px; opacity: 0.9; }
-.list { text-align: left; font-size: 13px; margin-top: 10px; line-height: 1.6; opacity: 0.95; }
-.list s { opacity: 0.5; color: #ff6b6b; }
-.price-new { color: #4dff88; font-weight: bold; }
+.list { text-align: left; font-size: 13px; margin-top: 10px; line-height: 1.6; opacity: 0.95; 
+       background: rgba(255,255,255,0.05); padding:15px; border-radius:12px; }
 
 /* QRIS */
 .qris img { width: 220px; border-radius: 12px; margin-top: 10px; }
@@ -94,7 +94,7 @@ h2 { margin: 5px 0; font-size: 22px; }
 /* Footer */
 .footer {
     text-align:center;
-    margin:20px 0;
+    margin:20px 0 0 0;
     font-size:12px;
     color:white;
     opacity:0.7;
@@ -161,19 +161,21 @@ h2 { margin: 5px 0; font-size: 22px; }
     <div class="section">List Panel Private</div>
     <div class="list">
 ✽ Panel Private Run Bot (Promo Ramadhan)<br>
-1GB RAM — <s>1K</s> <span class="price-new">500</span><br>
-5GB RAM — <s>3K</s> <span class="price-new">1,5K</span><br>
-10GB RAM — <s>6K</s> <span class="price-new">3K</span><br>
-Unlimited RAM — <s>8K</s> <span class="price-new">5K</span><br><br>
+<span style="color:#fff;">1GB RAM — </span><s style="color:#ff4d4d;">1K</s> <span style="color:#4dff88; font-weight:bold;">500</span><br>
+<span style="color:#fff;">5GB RAM — </span><s style="color:#ff4d4d;">3K</s> <span style="color:#4dff88; font-weight:bold;">1,5K</span><br>
+<span style="color:#fff;">10GB RAM — </span><s style="color:#ff4d4d;">6K</s> <span style="color:#4dff88; font-weight:bold;">3K</span><br>
+<span style="color:#fff;">Unlimited RAM — </span><s style="color:#ff4d4d;">8K</s> <span style="color:#4dff88; font-weight:bold;">5K</span><br><br>
 ✽ Sewa Bot Jaga Group<br>
-<s>4K</s> <span class="price-new">3K</span> / Minggu<br>
-<s>8K</s> <span class="price-new">6K</span> / Bulan<br>
-Anti Spam • Anti Link • Auto Welcome & Goodbye
+<s style="color:#ff4d4d;">4K</s> <span style="color:#4dff88; font-weight:bold;">3K</span> / Minggu<br>
+<s style="color:#ff4d4d;">8K</s> <span style="color:#4dff88; font-weight:bold;">6K</span> / Bulan<br>
+<span style="color:#fff;">Anti Spam • Anti Link • Auto Welcome & Goodbye</span>
     </div>
 
     <!-- Order Panel -->
     <div class="section">Order Panel Disini</div>
-    <a class="btn-order" href="https://wa.me/6282181254271?text=bg%20mau%20buy%20panel" target="_blank"><i class="fa-brands fa-whatsapp"></i> Order Sekarang</a>
+    <a class="btn-order" href="https://wa.me/6282181254271?text=bg%20mau%20buy%20panel" target="_blank">
+      <i class="fa-brands fa-whatsapp"></i> Order Sekarang
+    </a>
 
     <!-- QRIS -->
     <div class="section">PAYMENT QRIS</div>
