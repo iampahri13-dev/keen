@@ -17,7 +17,7 @@ body {
     min-height: 100vh;
     background: url("https://files.catbox.moe/cx6q08.jpg") no-repeat center center fixed;
     background-size: cover;
-    padding-bottom: 80px; /* space for footer */
+    padding-bottom: 80px; /* space for floating audio */
 }
 
 @media (min-width: 900px) {
@@ -90,15 +90,6 @@ h2 { margin: 5px 0; font-size: 22px; }
 
 /* QRIS */
 .qris img { width: 220px; border-radius: 12px; margin-top: 10px; }
-
-/* Footer */
-.footer {
-    text-align:center;
-    margin:20px 0 0 0;
-    font-size:12px;
-    color:white;
-    opacity:0.7;
-}
 
 /* Floating Audio */
 .music-floating {
@@ -177,13 +168,13 @@ h2 { margin: 5px 0; font-size: 22px; }
       <i class="fa-brands fa-whatsapp"></i> Order Sekarang
     </a>
 
-    <!-- QRIS -->
+    <!-- QRIS + Copyright -->
     <div class="section">PAYMENT QRIS</div>
-    <div class="qris"><img src="https://files.catbox.moe/8ge14c.jpg" alt="QRIS"></div>
+    <div class="qris" style="text-align:center;">
+      <img src="https://files.catbox.moe/8ge14c.jpg" alt="QRIS">
+      <div style="margin-top:8px; font-size:12px; color:white; opacity:0.7;">© Copyright pahrixski</div>
+    </div>
 </div>
-
-<!-- Footer -->
-<div class="footer">© Copyright pahrixski</div>
 
 <!-- Minimal Overlay -->
 <div id="overlay">
