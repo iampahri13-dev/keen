@@ -10,248 +10,237 @@
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    background: url("https://files.catbox.moe/cx6q08.jpg") no-repeat center center fixed;
-    background-size: cover;
-    padding-bottom: 80px; /* space for floating audio */
-}
-
-@media (min-width: 900px) {
-    body {
-        background: url("https://img2.pixhost.to/images/5795/695890805_ochobot.jpg") no-repeat center center fixed;
-        background-size: cover;
-    }
-}
-
-.card {
     position: relative;
-    background: rgba(0, 0, 0, 0.65);
-    padding: 30px;
-    border-radius: 20px;
+    overflow-x: hidden;
+    /* Tambah padding bawah agar konten tidak tertutup pemutar musik */
+    padding: 40px 0 160px 0; 
+}
+
+/* Background utama tetap blur */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://files.catbox.moe/2q1b4r.jpg") no-repeat center center;
+    background-size: cover;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+/* Container utama TANPA kotak hitam (transparan) */
+.main-container {
     text-align: center;
-    width: 360px;
+    width: 380px;
+    max-width: 90%;
     color: white;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-    margin: 40px 0;
 }
 
 img.profile {
-    width: 110px;
-    height: 110px;
+    width: 120px; height: 120px;
     border-radius: 50%;
     margin-bottom: 15px;
     object-fit: cover;
-    border: 3px solid white;
+    border: 3px solid #1a237e;
 }
 
-h2 { margin: 5px 0; font-size: 22px; }
-.tagline { font-size: 14px; opacity: 0.85; margin-bottom: 15px; font-style: italic; }
+h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
-/* Sosmed Buttons → navy dark */
-.btn {
-    display: block;
-    margin: 10px 0;
-    padding: 12px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: bold;
-    background: #1a237e; /* navy dark */
-    color: white;
+.tagline { 
+    font-size: 13px; 
+    opacity: 0.9; 
+    margin-bottom: 30px; 
+    line-height: 1.6; 
+    padding: 0 10px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+/* Container Tombol Sosial Media */
+.linktree-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.link-item {
+    display: flex; align-items: center; background: #1a237e;
+    color: white; padding: 14px 20px; border-radius: 12px;
+    text-decoration: none; font-weight: bold; font-size: 14px;
     transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
-.btn i { margin-right: 8px; }
-.btn:hover { background: #283593; }
+.link-item i { width: 25px; margin-right: 10px; }
+.link-item span { flex: 1; text-align: center; margin-right: 25px; }
 
-/* Tombol Order → hijau WA + horizontal lebih sempit */
-.btn-order {
-    display: block;
-    margin: 10px auto 0 auto;
-    padding: 10px 6px; /* atas-bawah 10px, kanan-kiri 6px → lebih sempit */
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    background: #25D366; /* hijau WhatsApp */
-    color: white;
-    font-size: 13px;
-    min-width: 120px;
-    text-align: center;
-    transition: 0.3s;
+/* Section Produk */
+.section-title {
+    font-size: 14px; font-weight: bold; text-align: left; margin-bottom: 15px;
+    color: #4dff88; text-transform: uppercase; border-left: 4px solid #4dff88; padding-left: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
-.btn-order:hover { background: #1ebe5d; }
 
-/* List Panel */
-.section { margin-top: 25px; font-weight: bold; font-size: 14px; opacity: 0.9; }
-.list { text-align: left; font-size: 13px; margin-top: 10px; line-height: 1.6; opacity: 0.95; 
-       background: rgba(255,255,255,0.05); padding:15px; border-radius:12px; }
+.product-item {
+    background: rgba(0, 0, 0, 0.7); /* Background item tetap gelap agar teks terbaca */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px; margin-bottom: 12px;
+    transition: 0.3s; cursor: pointer; 
+    text-align: left;
+    padding: 15px 20px;
+}
+.product-item:hover { background: rgba(0, 0, 0, 0.9); border-color: #4dff88; }
+.product-title { font-size: 16px; font-weight: bold; color: #4dff88; display: block; margin-bottom: 4px; }
+.product-teaser { font-size: 11px; opacity: 0.7; font-style: italic; display: block; }
 
-/* QRIS */
-.qris img { width: 220px; border-radius: 12px; margin-top: 10px; }
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden;
+    transition: 0.4s;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-content {
+    background: #0a0a0a;
+    width: 320px; border-radius: 20px; padding: 30px 25px;
+    position: relative; border: 1px solid rgba(255,255,255,0.1);
+    text-align: center; transform: scale(0.7); transition: 0.3s;
+}
+.modal-overlay.active .modal-content { transform: scale(1); }
+.close-modal { position: absolute; top: 12px; right: 15px; font-size: 22px; color: white; cursor: pointer; }
 
-/* Floating Audio */
+.modal-product-title { font-size: 22px; font-weight: bold; color: #4dff88; margin-bottom: 15px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+.modal-full-desc { font-size: 14px; line-height: 1.8; color: white; text-align: left; margin-bottom: 25px; }
+
+.btn-wa-order {
+    display: block; width: 100%; padding: 14px; background: #25D366;
+    color: white; text-decoration: none; border-radius: 12px; font-weight: bold;
+}
+
+/* Floating Audio Playlist */
 .music-floating {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.8);
-    padding: 10px 15px;
-    border-radius: 15px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 999;
-    color: white;
-    font-size: 12px;
-    min-width: 280px;
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.95); padding: 12px 25px; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    z-index: 998; color: white; min-width: 280px; border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
 }
-.music-floating .music-info { display: flex; align-items: center; gap: 10px; }
-.music-floating .music-info img { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; }
-.music-floating button {
-    border: none; background: white; color: black; border-radius: 50%; width: 40px; height: 40px;
-    cursor: pointer; font-size: 16px; display: flex; justify-content: center; align-items: center; transition: 0.3s;
+.music-info { display: flex; align-items: center; gap: 10px; width: 100%; }
+.music-info img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.music-controls { display: flex; gap: 15px; }
+.music-controls button {
+    background: white; border: none; color: black; width: 35px; height: 35px;
+    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.music-floating button:hover { transform: scale(1.1); }
-.music-floating audio { display: none; }
-
-/* Minimal Overlay */
-#overlay {
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.35);
-    color:white; display:flex; flex-direction:column;
-    justify-content:center; align-items:center; z-index: 9999;
-    font-family: Arial,sans-serif; text-align:center;
-    cursor:pointer;
-}
-#overlay h1 { font-size: 24px; margin-bottom:10px; }
-#overlay p { font-size: 14px; opacity:0.8; }
 </style>
 </head>
-
 <body>
 
-<div class="card">
-    <img class="profile" src="https://img2.pixhost.to/images/5795/695887232_ochobot.jpg" alt="Foto Profil">
+<div class="modal-overlay" id="productModal" onclick="closeModal(event)">
+    <div class="modal-content">
+        <i class="fa-solid fa-xmark close-modal" onclick="forceClose()"></i>
+        <span class="modal-product-title" id="modalTitle"></span>
+        <div class="modal-full-desc" id="modalDesc"></div>
+        <a href="" id="modalWaBtn" class="btn-wa-order" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> Pesan Sekarang Via WA
+        </a>
+    </div>
+</div>
+
+<div class="main-container">
+    <img class="profile" src="https://files.catbox.moe/i1zxe2.png">
     <h2>pahrixski</h2>
-    <div class="tagline">"I remember it All To well"</div>
-
-    <!-- Sosmed -->
-    <a class="btn" href="https://wa.me/6287785175535" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-    <a class="btn" href="https://instagram.com/fahrifq_" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a>
-    <a class="btn" href="https://tiktok.com/@fahrifq_" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
-    <a class="btn" href="https://youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
-
-    <a class="btn" href="https://whatsapp.com/channel/0029Vb7CyDH96H4TNIS3aB3T" target="_blank"><i class="fa-brands fa-whatsapp"></i> Channel Keen Testimoni</a>
-
-    <!-- List Panel Private -->
-    <div class="section">List Panel Private</div>
-    <div class="list">
-✽ Panel Private Run Bot (Promo Ramadhan)<br>
-<span style="color:#fff;">1GB RAM — </span><s style="color:#ff4d4d;">1K</s> <span style="color:#4dff88; font-weight:bold;">500</span><br>
-<span style="color:#fff;">5GB RAM — </span><s style="color:#ff4d4d;">3K</s> <span style="color:#4dff88; font-weight:bold;">1,5K</span><br>
-<span style="color:#fff;">10GB RAM — </span><s style="color:#ff4d4d;">6K</s> <span style="color:#4dff88; font-weight:bold;">3K</span><br>
-<span style="color:#fff;">Unlimited RAM — </span><s style="color:#ff4d4d;">8K</s> <span style="color:#4dff88; font-weight:bold;">5K</span><br><br>
-✽ Sewa Bot Jaga Group<br>
-<s style="color:#ff4d4d;">4K</s> <span style="color:#4dff88; font-weight:bold;">3K</span> / Minggu<br>
-<s style="color:#ff4d4d;">8K</s> <span style="color:#4dff88; font-weight:bold;">6K</span> / Bulan<br>
-<span style="color:#fff;">Anti Spam • Anti Link • Auto Welcome & Goodbye</span>
+    <div class="tagline">
+        believe in your potential even when others doubt because success is not final but courage to continue is the key to shape your own future with passion and kindness
     </div>
 
-    <!-- Order Panel -->
-    <div class="section">Order Panel Disini</div>
-    <a class="btn-order" href="https://wa.me/6282181254271?text=bg%20mau%20buy%20panel" target="_blank">
-      <i class="fa-brands fa-whatsapp"></i> Order Sekarang
-    </a>
-
-    <!-- QRIS + Copyright -->
-    <div class="section">PAYMENT QRIS</div>
-    <div class="qris" style="text-align:center;">
-      <img src="https://files.catbox.moe/8ge14c.jpg" alt="QRIS">
-      <div style="margin-top:8px; font-size:12px; color:white; opacity:0.7;">© Copyright pahrixski</div>
+    <div class="linktree-container">
+        <a class="link-item" href="https://wa.me/6283159768929" target="_blank"><i class="fa-brands fa-whatsapp"></i> <span>WhatsApp Admin</span></a>
+        <a class="link-item" href="https://instagram.com/fahrifq_" target="_blank"><i class="fa-brands fa-instagram"></i> <span>Instagram</span></a>
+        <a class="link-item" href="https://tiktok.com/@fahrifq_" target="_blank"><i class="fa-brands fa-tiktok"></i> <span>TikTok</span></a>
+        <a class="link-item" href="https://youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> <span>YouTube</span></a>
+        <a class="link-item" href="https://whatsapp.com/channel/0029Vb7CyDH96H4TNIS3aB3T" target="_blank"><i class="fa-solid fa-check-double"></i> <span>Channel Testimoni</span></a>
     </div>
+
+    <div class="section-title">Our Products</div>
+
+    <div class="product-item" onclick="openModal('panel_private')">
+        <span class="product-title">panel private</span>
+        <span class="product-teaser">Unlimited cuma 3k? Cek selengkapnya...</span>
+    </div>
+
+    <div class="product-item" onclick="openModal('am_premium')">
+        <span class="product-title">am premium</span>
+        <span class="product-teaser">Durasi 1 tahun harga miring, klik untuk detail...</span>
+    </div>
+
+    <div style="margin-top: 30px; font-size: 11px; opacity: 0.6;">© 2026 pahrixski — Digital Solutions</div>
 </div>
 
-<!-- Minimal Overlay -->
-<div id="overlay">
-    <h1>Tap to play music</h1>
-    <p>Enjoy the playlist 🎵</p>
-</div>
-
-<!-- Floating Audio Playlist -->
 <div class="music-floating">
-  <div class="music-info">
-    <img id="musicThumb" src="https://files.catbox.moe/nir50b.jpg" alt="Thumbnail">
-    <div id="musicTitle">Message In A Bottle</div>
-  </div>
-  <div style="display:flex;gap:10px; margin-top:5px;">
-    <button id="prevBtn"><i class="fa-solid fa-backward"></i></button>
-    <button id="playBtn"><i class="fa-solid fa-pause"></i></button>
-    <button id="nextBtn"><i class="fa-solid fa-forward"></i></button>
-  </div>
-  <audio id="bgAudio">
-    <source src="https://files.catbox.moe/6rl47b.mp3" type="audio/mpeg">
-  </audio>
+    <div class="music-info">
+        <img id="musicThumb" src="https://files.catbox.moe/nir50b.jpg">
+        <div id="musicTitle" style="font-size:12px; font-weight:bold;">Message In A Bottle</div>
+    </div>
+    <div class="music-controls">
+        <button id="prevBtn"><i class="fa-solid fa-backward"></i></button>
+        <button id="playBtn"><i class="fa-solid fa-play"></i></button>
+        <button id="nextBtn"><i class="fa-solid fa-forward"></i></button>
+    </div>
+    <audio id="bgAudio">
+        <source src="https://files.catbox.moe/6rl47b.mp3" type="audio/mpeg">
+    </audio>
 </div>
 
 <script>
+const productsData = {
+    'panel_private': {
+        title: 'Panel Private Run Bot',
+        desc: '✽ Unlimited : 3k<br>✽ Ress Panel Tele : 7k<br><br>— Full garansi and high speed performance<br>— Payment via QRIS or Number',
+        waLink: 'https://wa.me/6283159768929?text=Halo+Pahrixski,+mau+order+Panel+Private'
+    },
+    'am_premium': {
+        title: 'Alight Motion Premium',
+        desc: '• Harga: 3k<br>• Durasi: 1 Tahun<br>• Fitur: Full Preset & No Watermark<br><br><b>Kelebihan:</b><br>— Unlock All Premium Features',
+        waLink: 'https://wa.me/6283159768929?text=Halo+Pahrixski,+mau+order+AM+Premium'
+    }
+};
+
+const modal = document.getElementById('productModal');
+function openModal(key) {
+    const data = productsData[key];
+    document.getElementById('modalTitle').textContent = data.title;
+    document.getElementById('modalDesc').innerHTML = data.desc;
+    document.getElementById('modalWaBtn').href = data.waLink;
+    modal.classList.add('active');
+}
+function closeModal(e) { if (e.target === modal) modal.classList.remove('active'); }
+function forceClose() { modal.classList.remove('active'); }
+
 const audio = document.getElementById('bgAudio');
-const playBtn = document.getElementById('playBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const title = document.getElementById('musicTitle');
-const thumb = document.getElementById('musicThumb');
-const overlay = document.getElementById('overlay');
-
 const playlist = [
-  {src: "https://files.catbox.moe/6rl47b.mp3", name: "Message In A Bottle", thumb: "https://files.catbox.moe/nir50b.jpg"},
-  {src: "https://files.catbox.moe/lrb13c.mp3", name: "Enchanted", thumb: "https://files.catbox.moe/eq0znl.jpg"},
-  {src: "https://files.catbox.moe/wcfnir.mp3", name: "All To Well", thumb: "https://files.catbox.moe/lnj0b7.jpg"}
+    {src: "https://files.catbox.moe/6rl47b.mp3", name: "Message In A Bottle", thumb: "https://files.catbox.moe/nir50b.jpg"},
+    {src: "https://files.catbox.moe/lrb13c.mp3", name: "Enchanted", thumb: "https://files.catbox.moe/eq0znl.jpg"},
+    {src: "https://files.catbox.moe/wcfnir.mp3", name: "All To Well", thumb: "https://files.catbox.moe/lnj0b7.jpg"}
 ];
-
 let current = 0;
 
 function loadSong(index){
-  audio.src = playlist[index].src;
-  title.textContent = playlist[index].name;
-  thumb.src = playlist[index].thumb;
-  audio.play().catch(()=>{});
-  playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    audio.src = playlist[index].src;
+    document.getElementById('musicTitle').textContent = playlist[index].name;
+    document.getElementById('musicThumb').src = playlist[index].thumb;
+    audio.play();
+    document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
 }
 
-playBtn.addEventListener('click', ()=>{
-    if(audio.paused){
-        audio.play();
-        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    } else {
-        audio.pause();
-        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-    }
+document.getElementById('playBtn').addEventListener('click', () => {
+    if(audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } 
+    else { audio.pause(); document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
 });
 
-nextBtn.addEventListener('click', ()=>{
-    current = (current + 1) % playlist.length;
-    loadSong(current);
-});
-prevBtn.addEventListener('click', ()=>{
-    current = (current - 1 + playlist.length) % playlist.length;
-    loadSong(current);
-});
-
-audio.addEventListener('ended', ()=>{
-    current = (current + 1) % playlist.length;
-    loadSong(current);
-});
-
-// Overlay click
-overlay.addEventListener('click', ()=>{
-    overlay.style.display = 'none';
-    loadSong(current);
-});
+document.getElementById('nextBtn').addEventListener('click', () => { current = (current + 1) % playlist.length; loadSong(current); });
+document.getElementById('prevBtn').addEventListener('click', () => { current = (current - 1 + playlist.length) % playlist.length; loadSong(current); });
+audio.addEventListener('ended', () => { current = (current + 1) % playlist.length; loadSong(current); });
 </script>
 
 </body>
