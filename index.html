@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>pahrixski</title>
+<title>KEEN STORE</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -17,22 +17,22 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
-    /* Tambah padding bawah agar konten tidak tertutup pemutar musik */
-    padding: 40px 0 160px 0; 
+    /* Memberi ruang ekstra di bawah agar produk tidak tertutup player */
+    padding: 40px 0 180px 0; 
 }
 
-/* Background utama tetap blur */
+/* Background Statis (Tidak ikut scroll) */
 body::before {
     content: "";
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://files.catbox.moe/2q1b4r.jpg") no-repeat center center;
     background-size: cover;
+    background-attachment: fixed; /* Kunci background agar tetap di tempat */
     filter: blur(5px);
     z-index: -1;
 }
 
-/* Container utama TANPA kotak hitam (transparan) */
 .main-container {
     text-align: center;
     width: 380px;
@@ -48,7 +48,7 @@ img.profile {
     border: 3px solid #1a237e;
 }
 
-h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); }
 
 .tagline { 
     font-size: 13px; 
@@ -56,41 +56,37 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
     margin-bottom: 30px; 
     line-height: 1.6; 
     padding: 0 10px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
-/* Container Tombol Sosial Media */
-.linktree-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.linktree-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 35px; }
 .link-item {
     display: flex; align-items: center; background: #1a237e;
     color: white; padding: 14px 20px; border-radius: 12px;
     text-decoration: none; font-weight: bold; font-size: 14px;
     transition: 0.3s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 .link-item i { width: 25px; margin-right: 10px; }
 .link-item span { flex: 1; text-align: center; margin-right: 25px; }
 
-/* Section Produk */
 .section-title {
     font-size: 14px; font-weight: bold; text-align: left; margin-bottom: 15px;
     color: #4dff88; text-transform: uppercase; border-left: 4px solid #4dff88; padding-left: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
 .product-item {
-    background: rgba(0, 0, 0, 0.7); /* Background item tetap gelap agar teks terbaca */
+    background: rgba(0, 0, 0, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px; margin-bottom: 12px;
     transition: 0.3s; cursor: pointer; 
     text-align: left;
-    padding: 15px 20px;
+    padding: 18px 20px;
 }
 .product-item:hover { background: rgba(0, 0, 0, 0.9); border-color: #4dff88; }
 .product-title { font-size: 16px; font-weight: bold; color: #4dff88; display: block; margin-bottom: 4px; }
 .product-teaser { font-size: 11px; opacity: 0.7; font-style: italic; display: block; }
 
-/* Modal Overlay */
+/* Modal Deskripsi */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.9);
@@ -101,7 +97,7 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
 }
 .modal-overlay.active { opacity: 1; visibility: visible; }
 .modal-content {
-    background: #0a0a0a;
+    background: #0d0d0d;
     width: 320px; border-radius: 20px; padding: 30px 25px;
     position: relative; border: 1px solid rgba(255,255,255,0.1);
     text-align: center; transform: scale(0.7); transition: 0.3s;
@@ -110,23 +106,22 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
 .close-modal { position: absolute; top: 12px; right: 15px; font-size: 22px; color: white; cursor: pointer; }
 
 .modal-product-title { font-size: 22px; font-weight: bold; color: #4dff88; margin-bottom: 15px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-.modal-full-desc { font-size: 14px; line-height: 1.8; color: white; text-align: left; margin-bottom: 25px; }
+.modal-full-desc { font-size: 14px; line-height: 1.8; color: #eee; text-align: left; margin-bottom: 25px; }
 
 .btn-wa-order {
     display: block; width: 100%; padding: 14px; background: #25D366;
     color: white; text-decoration: none; border-radius: 12px; font-weight: bold;
 }
 
-/* Floating Audio Playlist */
+/* Floating Audio Player */
 .music-floating {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,0.95); padding: 12px 25px; border-radius: 20px;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
     z-index: 998; color: white; min-width: 280px; border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
 }
 .music-info { display: flex; align-items: center; gap: 10px; width: 100%; }
-.music-info img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.music-info img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
 .music-controls { display: flex; gap: 15px; }
 .music-controls button {
     background: white; border: none; color: black; width: 35px; height: 35px;
@@ -149,7 +144,7 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
 
 <div class="main-container">
     <img class="profile" src="https://files.catbox.moe/i1zxe2.png">
-    <h2>pahrixski</h2>
+    <h2>KEEN STORE</h2>
     <div class="tagline">
         believe in your potential even when others doubt because success is not final but courage to continue is the key to shape your own future with passion and kindness
     </div>
@@ -158,7 +153,7 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
         <a class="link-item" href="https://wa.me/6283159768929" target="_blank"><i class="fa-brands fa-whatsapp"></i> <span>WhatsApp Admin</span></a>
         <a class="link-item" href="https://instagram.com/fahrifq_" target="_blank"><i class="fa-brands fa-instagram"></i> <span>Instagram</span></a>
         <a class="link-item" href="https://tiktok.com/@fahrifq_" target="_blank"><i class="fa-brands fa-tiktok"></i> <span>TikTok</span></a>
-        <a class="link-item" href="https://youtube.com" target="_blank"><i class="fa-brands fa-youtube"></i> <span>YouTube</span></a>
+        <a class="link-item" href="https://youtube.com/@pahrixski?si=-hyiSBsLZwXocQkB" target="_blank"><i class="fa-brands fa-youtube"></i> <span>YouTube</span></a>
         <a class="link-item" href="https://whatsapp.com/channel/0029Vb7CyDH96H4TNIS3aB3T" target="_blank"><i class="fa-solid fa-check-double"></i> <span>Channel Testimoni</span></a>
     </div>
 
@@ -174,7 +169,7 @@ h2 { margin: 5px 0; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px
         <span class="product-teaser">Durasi 1 tahun harga miring, klik untuk detail...</span>
     </div>
 
-    <div style="margin-top: 30px; font-size: 11px; opacity: 0.6;">© 2026 pahrixski — Digital Solutions</div>
+    <div style="margin-top: 30px; font-size: 11px; opacity: 0.6;">© 2026 KEEN STORE — Digital Solutions</div>
 </div>
 
 <div class="music-floating">
@@ -197,12 +192,12 @@ const productsData = {
     'panel_private': {
         title: 'Panel Private Run Bot',
         desc: '✽ Unlimited : 3k<br>✽ Ress Panel Tele : 7k<br><br>— Full garansi and high speed performance<br>— Payment via QRIS or Number',
-        waLink: 'https://wa.me/6283159768929?text=Halo+Pahrixski,+mau+order+Panel+Private'
+        waLink: 'https://wa.me/6283159768929?text=Halo+KeenStore,+mau+order+Panel+Private'
     },
     'am_premium': {
         title: 'Alight Motion Premium',
         desc: '• Harga: 3k<br>• Durasi: 1 Tahun<br>• Fitur: Full Preset & No Watermark<br><br><b>Kelebihan:</b><br>— Unlock All Premium Features',
-        waLink: 'https://wa.me/6283159768929?text=Halo+Pahrixski,+mau+order+AM+Premium'
+        waLink: 'https://wa.me/6283159768929?text=Halo+KeenStore,+mau+order+AM+Premium'
     }
 };
 
@@ -234,8 +229,13 @@ function loadSong(index){
 }
 
 document.getElementById('playBtn').addEventListener('click', () => {
-    if(audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-pause"></i>'; } 
-    else { audio.pause(); document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-play"></i>'; }
+    if(audio.paused) { 
+        audio.play(); 
+        document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-pause"></i>'; 
+    } else { 
+        audio.pause(); 
+        document.getElementById('playBtn').innerHTML = '<i class="fa-solid fa-play"></i>'; 
+    }
 });
 
 document.getElementById('nextBtn').addEventListener('click', () => { current = (current + 1) % playlist.length; loadSong(current); });
