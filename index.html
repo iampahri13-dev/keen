@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080f24">
-<meta name="description" content="Temukan semua tautan sosial media pahrixski dalam satu halaman.">
+<meta name="description" content="Temukan semua tautan sosial media dan portofolio pahrixski dalam satu halaman.">
 <title>pahrixski — Personal Links</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +22,8 @@
   --muted:#aab8d6;
   --accent:#9bb7ff;
   --shadow:rgba(0,0,0,.25);
+  --particle:rgba(155,183,255,.65);
+  --particle-line:155,183,255;
 }
 
 body.light {
@@ -34,6 +35,8 @@ body.light {
   --muted:#536586;
   --accent:#4169bd;
   --shadow:rgba(40,60,100,.12);
+  --particle:rgba(65,105,189,.55);
+  --particle-line:65,105,189;
 }
 
 * {box-sizing:border-box}
@@ -42,7 +45,7 @@ html {scroll-behavior:smooth}
 body {
   margin:0;
   min-height:100vh;
-  padding:45px 18px 165px;
+  padding:45px 18px 180px;
   display:flex;
   justify-content:center;
   color:var(--text);
@@ -311,6 +314,7 @@ h1 {
   font-weight:800;
   color:var(--accent);
   margin-top:5px;
+  font-variant-numeric:tabular-nums;
 }
 
 /* THEME */
@@ -330,6 +334,7 @@ h1 {
   cursor:pointer;
   font-size:11px;
   font-weight:700;
+  font-family:inherit;
 }
 
 /* MUSIC PLAYER */
@@ -360,6 +365,13 @@ h1 {
 }
 
 .music-meta {min-width:0;text-align:left}
+.music-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
 .music-kicker {
   color:var(--accent);
   font-size:9px;
@@ -367,11 +379,19 @@ h1 {
   font-weight:800;
 }
 
+.music-time {
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
 .music-title {
   color:var(--text);
   font-size:11px;
   font-weight:700;
-  margin-top:3px;
+  margin-top:2px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -379,7 +399,7 @@ h1 {
 
 .progress-wrap {
   height:3px;
-  margin-top:8px;
+  margin-top:7px;
   border-radius:9px;
   background:var(--line);
   overflow:hidden;
@@ -419,8 +439,8 @@ h1 {
 .volume-row {
   display:flex;
   align-items:center;
-  gap:9px;
-  margin-top:9px;
+  gap:8px;
+  margin-top:8px;
   color:var(--muted);
   font-size:10px;
 }
@@ -486,10 +506,15 @@ h1 {
     <div id="date">Loading date...</div>
   </section>
 
-  <!-- SOCIAL LINKS -->
+  <!-- SOCIAL & PORTFOLIO LINKS -->
   <div class="section-label">Find me on</div>
 
-  <nav class="linktree-container" aria-label="Social media links">
+  <nav class="linktree-container" aria-label="Social media and portfolio links">
+
+    <a class="link-item" href="https://portofolio-pahri.vercel.app" target="_blank" rel="noopener noreferrer">
+      <i class="fa-solid fa-briefcase"></i>
+      <span>Portfolio</span>
+    </a>
 
     <a class="link-item" href="https://wa.me/6285113652711" target="_blank" rel="noopener noreferrer">
       <i class="fa-brands fa-whatsapp"></i>
@@ -521,8 +546,8 @@ h1 {
     <div class="card-description">
       Like this page? Share my personal links with your friends.
     </div>
-    <button class="action-button primary" id="shareBtn">
-      <i class="fa-solid fa-share"></i> Share Profile
+    <button class="action-button primary" id="shareBtn" type="button">
+      <i class="fa-solid fa-share"></i> <span>Share Profile</span>
     </button>
   </section>
 
@@ -557,7 +582,7 @@ h1 {
         </div>
         <div class="card-description">Choose your appearance</div>
       </div>
-      <button class="theme-switch" id="themeBtn">
+      <button class="theme-switch" id="themeBtn" type="button" aria-pressed="false">
         <i class="fa-solid fa-sun"></i> Light
       </button>
     </div>
@@ -568,7 +593,7 @@ h1 {
       <i class="fa-regular fa-compass"></i> Welcome to my space
     </div>
     <div class="card-description">
-      One place to find my social media, updates, and other things around the internet. Thanks for stopping by.
+      One place to find my portfolio, social media, updates, and other things around the internet. Thanks for stopping by.
     </div>
   </section>
 
@@ -584,7 +609,10 @@ h1 {
   <img id="musicThumb" src="https://files.catbox.moe/nir50b.jpg" alt="Album cover">
 
   <div class="music-meta">
-    <div class="music-kicker">NOW PLAYING</div>
+    <div class="music-header">
+      <div class="music-kicker">NOW PLAYING</div>
+      <div class="music-time" id="musicTime">00:00 / 00:00</div>
+    </div>
     <div class="music-title" id="musicTitle">Message In A Bottle</div>
 
     <div class="progress-wrap" id="progressWrap" aria-label="Song progress">
@@ -599,13 +627,13 @@ h1 {
   </div>
 
   <div class="music-controls">
-    <button id="prevBtn" aria-label="Previous song">
+    <button id="prevBtn" type="button" aria-label="Previous song">
       <i class="fa-solid fa-backward-step"></i>
     </button>
-    <button id="playBtn" aria-label="Play or pause">
+    <button id="playBtn" type="button" aria-label="Play or pause">
       <i class="fa-solid fa-play"></i>
     </button>
-    <button id="nextBtn" aria-label="Next song">
+    <button id="nextBtn" type="button" aria-label="Next song">
       <i class="fa-solid fa-forward-step"></i>
     </button>
   </div>
@@ -617,15 +645,21 @@ h1 {
 
 <script>
 /* =================================
-   LIVE GREETING + DIGITAL CLOCK
+   LIVE GREETING + DIGITAL CLOCK (WIB)
 ================================= */
+const hourFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Jakarta",
+  hour: "2-digit",
+  hour12: false
+});
+
 function updateClock() {
   const now = new Date();
-  const hour = now.getHours();
+  const hour = Number(hourFormatter.format(now));
 
   let greeting = "Good evening!";
-  if (hour >= 4 && hour < 11) greeting = "Good morning!";
-  else if (hour >= 11 && hour < 15) greeting = "Good afternoon!";
+  if (hour >= 4 && hour < 12) greeting = "Good morning!";
+  else if (hour >= 12 && hour < 15) greeting = "Good afternoon!";
   else if (hour >= 15 && hour < 18) greeting = "Good evening!";
 
   document.getElementById("greeting").textContent = greeting;
@@ -692,6 +726,10 @@ window.addEventListener("pointerleave", () => {
 });
 
 function animateParticles() {
+  const styles = getComputedStyle(document.body);
+  const dotColor = styles.getPropertyValue("--particle").trim();
+  const lineRgb = styles.getPropertyValue("--particle-line").trim();
+
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
   particles.forEach((p, i) => {
@@ -703,7 +741,7 @@ function animateParticles() {
 
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(155,183,255,.65)";
+    ctx.fillStyle = dotColor;
     ctx.fill();
 
     if (mouse.x !== null) {
@@ -715,7 +753,7 @@ function animateParticles() {
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(mouse.x, mouse.y);
-        ctx.strokeStyle = `rgba(155,183,255,${.2 * (1-distance/125)})`;
+        ctx.strokeStyle = `rgba(${lineRgb},${.22 * (1 - distance / 125)})`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -731,7 +769,7 @@ function animateParticles() {
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(other.x, other.y);
-        ctx.strokeStyle = `rgba(155,183,255,${.12 * (1-distance/90)})`;
+        ctx.strokeStyle = `rgba(${lineRgb},${.14 * (1 - distance / 90)})`;
         ctx.stroke();
       }
     }
@@ -749,7 +787,19 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 /* =================================
    SHARE MY PROFILE
 ================================= */
-document.getElementById("shareBtn").addEventListener("click", async () => {
+const shareBtn = document.getElementById("shareBtn");
+const shareLabel = shareBtn.querySelector("span");
+let shareResetTimer = null;
+
+function setShareFeedback(text) {
+  shareLabel.textContent = text;
+  clearTimeout(shareResetTimer);
+  shareResetTimer = setTimeout(() => {
+    shareLabel.textContent = "Share Profile";
+  }, 2000);
+}
+
+shareBtn.addEventListener("click", async () => {
   const shareData = {
     title: "pahrixski — Personal Links",
     text: "Check out my personal links!",
@@ -761,13 +811,13 @@ document.getElementById("shareBtn").addEventListener("click", async () => {
       await navigator.share(shareData);
     } else if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(window.location.href);
-      alert("Profile link copied!");
+      setShareFeedback("Link Copied!");
     } else {
       prompt("Copy this profile link:", window.location.href);
     }
   } catch (error) {
     if (error.name !== "AbortError") {
-      alert("Unable to share this link right now.");
+      setShareFeedback("Copy Failed");
     }
   }
 });
@@ -801,8 +851,21 @@ let current = 0;
 const playBtn = document.getElementById("playBtn");
 const progress = document.getElementById("progress");
 const volumeControl = document.getElementById("volumeControl");
+const musicTime = document.getElementById("musicTime");
 
 audio.volume = Number(volumeControl.value);
+
+function formatSeconds(sec) {
+  if (!Number.isFinite(sec) || sec < 0) return "00:00";
+  const total = Math.floor(sec);
+  const mins = Math.floor(total / 60);
+  const rem = total % 60;
+  return `${String(mins).padStart(2, "0")}:${String(rem).padStart(2, "0")}`;
+}
+
+function renderTimeDisplay() {
+  musicTime.textContent = `${formatSeconds(audio.currentTime)} / ${formatSeconds(audio.duration)}`;
+}
 
 function updateIcon() {
   playBtn.innerHTML = audio.paused
@@ -817,6 +880,7 @@ function loadSong(index, autoplay = true) {
   document.getElementById("musicTitle").textContent = playlist[current].name;
   document.getElementById("musicThumb").src = playlist[current].thumb;
   progress.style.width = "0%";
+  musicTime.textContent = "00:00 / 00:00";
 
   if (autoplay) {
     audio.play().then(updateIcon).catch(updateIcon);
@@ -843,8 +907,10 @@ document.getElementById("prevBtn").addEventListener("click", () => {
 });
 
 audio.addEventListener("ended", () => loadSong(current + 1));
+audio.addEventListener("loadedmetadata", renderTimeDisplay);
 
 audio.addEventListener("timeupdate", () => {
+  renderTimeDisplay();
   if (audio.duration) {
     progress.style.width =
       (audio.currentTime / audio.duration * 100) + "%";
@@ -862,7 +928,6 @@ document.getElementById("progressWrap").addEventListener("click", e => {
 audio.addEventListener("play", updateIcon);
 audio.addEventListener("pause", updateIcon);
 
-/* MUSIC VOLUME CONTROL */
 volumeControl.addEventListener("input", () => {
   audio.volume = Number(volumeControl.value);
 });
@@ -874,8 +939,8 @@ volumeControl.addEventListener("input", () => {
 const visitorElement = document.getElementById("visitorCount");
 
 try {
-  let visits = Number(localStorage.getItem("pahrixskiVisits") || 0);
-  visits++;
+  const prevVisits = Number(localStorage.getItem("pahrixskiVisits")) || 0;
+  const visits = prevVisits + 1;
   localStorage.setItem("pahrixskiVisits", visits);
   visitorElement.textContent = visits.toLocaleString("id-ID");
 } catch (error) {
@@ -889,9 +954,11 @@ try {
 const themeBtn = document.getElementById("themeBtn");
 
 function applyTheme(theme) {
-  document.body.classList.toggle("light", theme === "light");
+  const isLight = theme === "light";
+  document.body.classList.toggle("light", isLight);
+  themeBtn.setAttribute("aria-pressed", String(isLight));
 
-  themeBtn.innerHTML = theme === "light"
+  themeBtn.innerHTML = isLight
     ? '<i class="fa-solid fa-moon"></i> Dark'
     : '<i class="fa-solid fa-sun"></i> Light';
 }
