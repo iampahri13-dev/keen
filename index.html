@@ -852,6 +852,25 @@ body.light .reply-item {
   font-size:9px;
 }
 
+.mute-btn {
+  width:18px;
+  height:18px;
+  padding:0;
+  border:none;
+  border-radius:6px;
+  background:transparent;
+  color:var(--muted);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:.2s;
+  flex-shrink:0;
+}
+
+.mute-btn:hover {
+  color:var(--accent);
+}
+
 .volume-row input {
   width:100%;
   height:3px;
@@ -1287,7 +1306,9 @@ body.light .reply-item {
     </div>
 
     <div class="volume-row">
-      <i class="fa-solid fa-volume-low"></i>
+      <button class="mute-btn" id="muteBtn" type="button" aria-label="Toggle mute" title="Mute / Unmute">
+        <i class="fa-solid fa-volume-low" id="muteIcon"></i>
+      </button>
       <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.7" aria-label="Music volume">
       <i class="fa-solid fa-volume-high"></i>
     </div>
@@ -1432,8 +1453,27 @@ const defaultPlaylist = [
 let playlist = [...defaultPlaylist];
 let current = 0;
 let activeSupabaseClient = null;
-const HARDCODED_SB_URL = "";
-const HARDCODED_SB_KEY = "";
+const HARDCODED_SB_URL = "https://ryaptgvvzukscesonwso.supabase.co";
+const HARDCODED_SB_KEY = "sb_publishable_UZ61u6RsP4WWk5XH28TpTg_PDtzwRYl";
+
+function getOrCreateSenderToken() {
+  const tokenKey = "pahrixski_sender_token";
+  try {
+    let existing = localStorage.getItem(tokenKey);
+    if (!existing) {
+      const randomPart = (window.crypto && typeof window.crypto.randomUUID === "function")
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+      existing = `dev-${randomPart}`;
+      localStorage.setItem(tokenKey, existing);
+    }
+    return existing;
+  } catch (error) {
+    return "dev-session-fallback";
+  }
+}
+
+const SENDER_TOKEN = getOrCreateSenderToken();
 
 function updateMoodBadge() {
   const moodText = $("moodText");
@@ -1503,8 +1543,8 @@ document.addEventListener("click", (e) => {
 
 // Mengambil daftar lagu dari Supabase atau LocalStorage jika ada
 async function initDynamicPlaylist() {
-  const sbUrl = HARDCODED_SB_URL || localStorage.getItem("pahrixski_sb_url");
-  const sbKey = HARDCODED_SB_KEY || localStorage.getItem("pahrixski_sb_key");
+  const sbUrl = (localStorage.getItem("pahrixski_sb_url") || HARDCODED_SB_URL).trim();
+  const sbKey = (localStorage.getItem("pahrixski_sb_key") || HARDCODED_SB_KEY).trim();
 
   if (sbUrl && sbKey && window.supabase) {
     try {
@@ -1516,6 +1556,7 @@ async function initDynamicPlaylist() {
         renderPlaylistDrawer();
         updateMoodBadge();
         await initVisitorCounter(activeSupabaseClient);
+        await loadRepliedNotes();
         return;
       }
     } catch (e) {}
@@ -1534,15 +1575,39 @@ async function initDynamicPlaylist() {
 
   renderPlaylistDrawer();
   updateMoodBadge();
-  await initVisitorCounter(null);
+  await initVisitorCounter(activeSupabaseClient);
+  await loadRepliedNotes();
 }
 
 const playBtn = $("playBtn");
 const progress = $("progress");
 const progressWrap = $("progressWrap");
 const volumeControl = $("volumeControl");
+const muteBtn = $("muteBtn");
+const muteIcon = $("muteIcon");
+let lastNonZeroVolume = 0.7;
 
 audio.volume = Number(volumeControl.value);
+
+function syncVolumeUi() {
+  const isMuted = audio.muted || audio.volume === 0;
+  muteIcon.className = isMuted
+    ? "fa-solid fa-volume-xmark"
+    : (audio.volume < 0.45 ? "fa-solid fa-volume-low" : "fa-solid fa-volume-high");
+  volumeControl.value = String(isMuted ? 0 : audio.volume);
+}
+
+muteBtn.addEventListener("click", () => {
+  if (audio.muted || audio.volume === 0) {
+    audio.muted = false;
+    audio.volume = lastNonZeroVolume > 0 ? lastNonZeroVolume : 0.7;
+  } else {
+    lastNonZeroVolume = audio.volume > 0 ? audio.volume : 0.7;
+    audio.muted = true;
+  }
+  syncVolumeUi();
+  showToast(audio.muted ? "Audio muted" : "Audio unmuted");
+});
 
 function formatSeconds(sec) {
   if(!Number.isFinite(sec) || sec < 0) return "00:00";
@@ -1636,9 +1701,16 @@ progressWrap.addEventListener("keydown",e => {
 });
 
 volumeControl.addEventListener("input",() => {
-  audio.volume = Number(volumeControl.value);
+  const nextVol = Number(volumeControl.value);
+  audio.volume = nextVol;
+  audio.muted = nextVol === 0;
+  if (nextVol > 0) {
+    lastNonZeroVolume = nextVol;
+  }
+  syncVolumeUi();
 });
 
+syncVolumeUi();
 loadSong(0,false);
 renderPlaylistDrawer();
 updateMoodBadge();
@@ -1661,7 +1733,8 @@ async function loadRepliedNotes() {
     try {
       const { data, error } = await activeSupabaseClient
         .from("messages")
-        .select("sender, message, reply, replied_at")
+        .select("sender, message, reply, replied_at, sender_token")
+        .eq("sender_token", SENDER_TOKEN)
         .not("reply", "is", null)
         .order("id", { ascending: false })
         .limit(5);
@@ -1673,7 +1746,7 @@ async function loadRepliedNotes() {
     try {
       const localNotes = JSON.parse(localStorage.getItem("pahrixski_notes") || "[]");
       items = localNotes
-        .filter(n => n.reply && String(n.reply).trim() !== "")
+        .filter(n => n.reply && String(n.reply).trim() !== "" && (!n.sender_token || n.sender_token === SENDER_TOKEN))
         .slice(0, 5);
     } catch(error) {}
   }
@@ -1709,12 +1782,12 @@ $("quickNoteForm").addEventListener("submit", async (e) => {
     if(activeSupabaseClient) {
       const { error } = await activeSupabaseClient
         .from("messages")
-        .insert([{ sender, message }]);
+        .insert([{ sender, message, sender_token: SENDER_TOKEN }]);
       if(error) throw error;
       showToast("Message sent!");
     } else {
       const existing = JSON.parse(localStorage.getItem("pahrixski_notes") || "[]");
-      existing.unshift({ sender, message, created_at: new Date().toISOString() });
+      existing.unshift({ sender, message, sender_token: SENDER_TOKEN, created_at: new Date().toISOString() });
       localStorage.setItem("pahrixski_notes", JSON.stringify(existing.slice(0, 30)));
       showToast("Message saved locally!");
     }
@@ -1728,7 +1801,11 @@ $("quickNoteForm").addEventListener("submit", async (e) => {
   }
 });
 
-setTimeout(loadRepliedNotes, 400);
+setInterval(() => {
+  if (!document.hidden) {
+    loadRepliedNotes();
+  }
+}, 15000);
 
 /* VISITOR COUNTER - GLOBAL SUPABASE WITH LOCAL FALLBACK */
 
