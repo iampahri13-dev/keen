@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -5,6 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1025">
 <meta name="description" content="Discover all social media, portfolio and personal links of pahrixski.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="pahrixski — saif keenan ibrahim">
+<meta property="og:description" content="Discover all social media, portfolio, music playlist, and personal links of pahrixski.">
+<meta property="og:image" content="https://files.catbox.moe/9xb6mq.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="pahrixski — saif keenan ibrahim">
+<meta name="twitter:description" content="Discover all social media, portfolio, music playlist, and personal links of pahrixski.">
+<meta name="twitter:image" content="https://files.catbox.moe/9xb6mq.jpg">
 <title>pahrixski — saif keenan ibrahim</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -334,9 +343,30 @@ h1 {
   color:transparent;
 }
 
+.mood-badge {
+  margin:10px auto 0;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 13px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:700;
+  color:var(--text);
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 6px 18px var(--shadow);
+}
+
+.mood-badge i {
+  color:var(--accent);
+}
+
 .tagline {
   max-width:350px;
-  margin:15px auto 21px;
+  margin:14px auto 21px;
   padding:0 8px;
   color:var(--muted);
   font-size:11px;
@@ -525,6 +555,74 @@ h1 {
   background:var(--button-gradient);
   border:1px solid rgba(255,255,255,.3);
   box-shadow:0 6px 22px rgba(105,110,220,.25);
+}
+
+.action-row {
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  margin-top:12px;
+}
+
+.action-row .action-button {
+  margin-top:0;
+}
+
+.copy-icon-btn {
+  padding:0 14px;
+  border-radius:13px;
+  border:1px solid var(--glass-border);
+  background:var(--glass);
+  color:var(--text);
+  font-family:inherit;
+  font-size:11px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  transition:.22s;
+}
+
+.copy-icon-btn:hover {
+  transform:translateY(-2px);
+  border-color:var(--accent);
+}
+
+.copy-icon-btn:active {
+  transform:scale(.98);
+}
+
+.note-input,
+.note-textarea {
+  width:100%;
+  padding:11px 13px;
+  margin-top:9px;
+  border-radius:12px;
+  border:1px solid var(--glass-border);
+  background:rgba(12,16,38,.28);
+  color:var(--text);
+  font-family:inherit;
+  font-size:11px;
+  outline:none;
+  transition:border-color .22s,background .3s;
+}
+
+body.light .note-input,
+body.light .note-textarea {
+  background:rgba(255,255,255,.65);
+}
+
+.note-input:focus,
+.note-textarea:focus {
+  border-color:var(--accent);
+}
+
+.note-textarea {
+  min-height:76px;
+  resize:vertical;
+  line-height:1.55;
 }
 
 /* VISITOR */
@@ -752,6 +850,110 @@ h1 {
   border-color:rgba(255,255,255,.35);
 }
 
+.playlist-drawer {
+  position:fixed;
+  z-index:26;
+  bottom:calc(108px + env(safe-area-inset-bottom));
+  left:50%;
+  transform:translate(-50%,12px);
+  width:min(calc(100% - 24px),410px);
+  max-height:260px;
+  overflow-y:auto;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid var(--glass-border);
+  background:var(--player-bg);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:0 14px 40px var(--shadow);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .24s ease,transform .24s ease,visibility .24s ease;
+}
+
+.playlist-drawer.open {
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translate(-50%,0);
+}
+
+.playlist-drawer-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:2px 4px 10px;
+  border-bottom:1px solid var(--glass-border);
+  margin-bottom:8px;
+}
+
+.playlist-track {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:8px;
+  border-radius:12px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text);
+  font-family:inherit;
+  text-align:left;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.playlist-track + .playlist-track {
+  margin-top:4px;
+}
+
+.playlist-track:hover {
+  background:rgba(182,162,255,.12);
+}
+
+.playlist-track.active {
+  background:rgba(182,162,255,.18);
+  border-color:var(--accent);
+}
+
+.playlist-track img {
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+.playlist-track-info {
+  flex:1;
+  min-width:0;
+}
+
+.playlist-track-title {
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.playlist-track-sub {
+  font-size:9px;
+  color:var(--muted);
+  margin-top:1px;
+}
+
+.playlist-track i {
+  color:var(--accent);
+  font-size:11px;
+}
+
 /* SCROLL PROGRESS */
 
 .scroll-progress {
@@ -912,6 +1114,10 @@ h1 {
 
     <h1>pahrixski</h1>
     <div class="handle">PERSONAL LINKS</div>
+    <div class="mood-badge" id="moodBadge" title="Current live status">
+      <i class="fa-solid fa-sparkles" id="moodIcon"></i>
+      <span id="moodText">Vibing &amp; building cool things</span>
+    </div>
 
     <p class="tagline">
       believe in your potential even when others doubt because success is not final but courage to continue is the key to shape your own future with passion and kindness
@@ -958,17 +1164,35 @@ h1 {
 
   <section class="card glass reveal">
     <div class="card-title"><i class="fa-regular fa-paper-plane"></i> Contact Me</div>
-    <div class="card-description">Have something to discuss? Feel free to reach out.</div>
-    <a class="action-button primary" href="https://wa.me/6285113652711" target="_blank" rel="noopener noreferrer">
-      <i class="fa-brands fa-whatsapp"></i> Let's Talk
-    </a>
+    <div class="card-description">Have something to discuss? Feel free to reach out or copy my contact.</div>
+    <div class="action-row">
+      <a class="action-button primary" href="https://wa.me/6285113652711" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i> Let's Talk
+      </a>
+      <button class="copy-icon-btn" id="copyPhoneBtn" type="button" aria-label="Copy WhatsApp number">
+        <i class="fa-regular fa-copy"></i>
+        <span>+62 851-1365-2711</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="card glass reveal">
+    <div class="card-title"><i class="fa-regular fa-comment-dots"></i> Send a Quick Note</div>
+    <div class="card-description">Leave a short message or greeting directly.</div>
+    <form id="quickNoteForm">
+      <input class="note-input" id="noteSender" type="text" maxlength="60" placeholder="Your name (optional)">
+      <textarea class="note-textarea" id="noteMessage" maxlength="300" placeholder="Write a quick message..." required></textarea>
+      <button class="action-button primary" id="sendNoteBtn" type="submit">
+        <i class="fa-solid fa-paper-plane"></i> Send Message
+      </button>
+    </form>
   </section>
 
   <section class="card glass reveal">
     <div class="visitor-row">
       <div>
         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Visitor Counter</div>
-        <div class="card-description">Visits recorded on this browser</div>
+        <div class="card-description" id="visitorLabel">Visits recorded on this browser</div>
         <div class="visitor-number" id="visitorCount">0</div>
       </div>
       <div class="visitor-icon"><i class="fa-solid fa-eye"></i></div>
@@ -989,6 +1213,14 @@ h1 {
 <button class="back-top" id="backTop" aria-label="Back to top">
   <i class="fa-solid fa-arrow-up"></i>
 </button>
+
+<div class="playlist-drawer" id="playlistDrawer" aria-label="Playlist tracks">
+  <div class="playlist-drawer-header">
+    <span><i class="fa-solid fa-list-music"></i> Playlist</span>
+    <span id="playlistDrawerCount">0 tracks</span>
+  </div>
+  <div id="playlistDrawerList"></div>
+</div>
 
 <div class="music-floating" id="musicPlayer">
   <img id="musicThumb" src="https://files.catbox.moe/nir50b.jpg" alt="Album cover">
@@ -1018,6 +1250,9 @@ h1 {
   </div>
 
   <div class="music-controls">
+    <button id="playlistToggleBtn" type="button" aria-label="Toggle playlist" aria-expanded="false">
+      <i class="fa-solid fa-list-ul"></i>
+    </button>
     <button id="prevBtn" type="button" aria-label="Previous song"><i class="fa-solid fa-backward-step"></i></button>
     <button id="playBtn" type="button" aria-label="Play or pause"><i class="fa-solid fa-play"></i></button>
     <button id="nextBtn" type="button" aria-label="Next song"><i class="fa-solid fa-forward-step"></i></button>
@@ -1037,6 +1272,32 @@ function showToast(message) {
   toast.classList.add("show");
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => toast.classList.remove("show"),2300);
+}
+
+async function copyTextWithFallback(text, successMsg, failMsg) {
+  try {
+    if(navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      showToast(successMsg);
+      return true;
+    }
+  } catch(error) {}
+
+  try {
+    const input = document.createElement("textarea");
+    input.value = text;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    const copied = document.execCommand("copy");
+    input.remove();
+    showToast(copied ? successMsg : failMsg);
+    return copied;
+  } catch(error) {
+    showToast(failMsg);
+    return false;
+  }
 }
 
 /* CLOCK WIB */
@@ -1087,23 +1348,18 @@ $("shareBtn").addEventListener("click",async () => {
   try {
     if(navigator.share) {
       await navigator.share(shareData);
-    } else if(navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(window.location.href);
-      showToast("Profile link copied!");
     } else {
-      const input = document.createElement("textarea");
-      input.value = window.location.href;
-      input.style.position = "fixed";
-      input.style.opacity = "0";
-      document.body.appendChild(input);
-      input.select();
-      const copied = document.execCommand("copy");
-      input.remove();
-      showToast(copied ? "Profile link copied!" : "Copy unavailable");
+      await copyTextWithFallback(window.location.href, "Profile link copied!", "Copy unavailable");
     }
   } catch(error) {
     if(error.name !== "AbortError") showToast("Unable to share profile");
   }
+});
+
+/* QUICK COPY CONTACT */
+
+$("copyPhoneBtn").addEventListener("click", () => {
+  copyTextWithFallback("+6285113652711", "WhatsApp number copied!", "Unable to copy number");
 });
 
 /* MUSIC PLAYER */
@@ -1130,23 +1386,92 @@ const defaultPlaylist = [
 ];
 
 let playlist = [...defaultPlaylist];
+let current = 0;
+let activeSupabaseClient = null;
+const HARDCODED_SB_URL = "";
+const HARDCODED_SB_KEY = "";
+
+function updateMoodBadge() {
+  const moodText = $("moodText");
+  const moodIcon = $("moodIcon");
+  const customMood = localStorage.getItem("pahrixski_mood");
+
+  if(!audio.paused && playlist[current]) {
+    moodIcon.className = "fa-solid fa-music";
+    moodText.textContent = `Listening to ${playlist[current].name}`;
+    return;
+  }
+
+  moodIcon.className = "fa-solid fa-sparkles";
+  moodText.textContent = customMood && customMood.trim()
+    ? customMood.trim()
+    : "Vibing & building cool things";
+}
+
+function renderPlaylistDrawer() {
+  const drawerList = $("playlistDrawerList");
+  const drawerCount = $("playlistDrawerCount");
+  if(!drawerList || !drawerCount) return;
+
+  drawerCount.textContent = `${playlist.length} ${playlist.length === 1 ? "track" : "tracks"}`;
+  drawerList.innerHTML = "";
+
+  playlist.forEach((song, idx) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `playlist-track${idx === current ? " active" : ""}`;
+    btn.innerHTML = `
+      <img src="${song.thumb}" alt="${song.name}" onerror="this.src='https://placehold.co/80x80/191f43/b6a2ff?text=♪'">
+      <div class="playlist-track-info">
+        <div class="playlist-track-title">${song.name}</div>
+        <div class="playlist-track-sub">${idx === current ? "Selected" : "Tap to play"}</div>
+      </div>
+      <i class="fa-solid ${idx === current && !audio.paused ? "fa-volume-high" : "fa-play"}"></i>
+    `;
+    btn.addEventListener("click", () => {
+      loadSong(idx, true);
+      setDrawerOpen(false);
+    });
+    drawerList.appendChild(btn);
+  });
+}
+
+const playlistDrawer = $("playlistDrawer");
+const playlistToggleBtn = $("playlistToggleBtn");
+
+function setDrawerOpen(open) {
+  playlistDrawer.classList.toggle("open", open);
+  playlistToggleBtn.setAttribute("aria-expanded", String(open));
+}
+
+playlistToggleBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  setDrawerOpen(!playlistDrawer.classList.contains("open"));
+});
+
+document.addEventListener("click", (e) => {
+  if(playlistDrawer.classList.contains("open") &&
+     !playlistDrawer.contains(e.target) &&
+     !playlistToggleBtn.contains(e.target)) {
+    setDrawerOpen(false);
+  }
+});
 
 // Mengambil daftar lagu dari Supabase atau LocalStorage jika ada
 async function initDynamicPlaylist() {
-  // Isi URL & Anon Key Supabase Anda di sini agar pengunjung lain juga melihat lagu baru
-  const HARDCODED_SB_URL = ""; 
-  const HARDCODED_SB_KEY = "";
-
   const sbUrl = HARDCODED_SB_URL || localStorage.getItem("pahrixski_sb_url");
   const sbKey = HARDCODED_SB_KEY || localStorage.getItem("pahrixski_sb_key");
 
   if (sbUrl && sbKey && window.supabase) {
     try {
-      const sb = window.supabase.createClient(sbUrl, sbKey);
-      const { data, error } = await sb.from("songs").select("*").order("id", { ascending: true });
+      activeSupabaseClient = window.supabase.createClient(sbUrl, sbKey);
+      const { data, error } = await activeSupabaseClient.from("songs").select("*").order("id", { ascending: true });
       if (!error && data && data.length > 0) {
         playlist = data;
         loadSong(0, false);
+        renderPlaylistDrawer();
+        updateMoodBadge();
+        await initVisitorCounter(activeSupabaseClient);
         return;
       }
     } catch (e) {}
@@ -1162,9 +1487,12 @@ async function initDynamicPlaylist() {
       }
     }
   } catch (e) {}
+
+  renderPlaylistDrawer();
+  updateMoodBadge();
+  await initVisitorCounter(null);
 }
 
-let current = 0;
 const playBtn = $("playBtn");
 const progress = $("progress");
 const progressWrap = $("progressWrap");
@@ -1189,6 +1517,8 @@ function updateIcon() {
     ? '<i class="fa-solid fa-pause"></i>'
     : '<i class="fa-solid fa-play"></i>';
   player.classList.toggle("playing",playing);
+  updateMoodBadge();
+  renderPlaylistDrawer();
 }
 
 function loadSong(index,autoplay=true) {
@@ -1196,16 +1526,19 @@ function loadSong(index,autoplay=true) {
   const song = playlist[current];
 
   audio.src = song.src;
+  audio.load();
   $("musicTitle").textContent = song.name;
   $("musicThumb").src = song.thumb;
   progress.style.width = "0%";
   progressWrap.setAttribute("aria-valuenow","0");
   $("musicTime").textContent = "00:00 / 00:00";
+  renderPlaylistDrawer();
+  updateMoodBadge();
 
   if(autoplay) {
-    audio.play().catch(() => {
+    audio.play().catch((err) => {
       updateIcon();
-      showToast("Unable to play this song");
+      showToast("Unable to play this song: " + (err?.message || "check audio URL"));
     });
   } else {
     audio.pause();
@@ -1263,18 +1596,90 @@ volumeControl.addEventListener("input",() => {
 });
 
 loadSong(0,false);
+renderPlaylistDrawer();
+updateMoodBadge();
 initDynamicPlaylist();
 
-/* VISITOR COUNTER - LOCAL BROWSER */
+/* QUICK NOTE (SUPABASE + LOCAL FALLBACK) */
 
-try {
-  const key = "pahrixskiVisits";
-  const previous = Number(localStorage.getItem(key)) || 0;
-  const visits = previous+1;
-  localStorage.setItem(key,String(visits));
-  $("visitorCount").textContent = visits.toLocaleString("id-ID");
-} catch(error) {
-  $("visitorCount").textContent = "—";
+$("quickNoteForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const senderInput = $("noteSender");
+  const messageInput = $("noteMessage");
+  const sendBtn = $("sendNoteBtn");
+  const message = messageInput.value.trim();
+  const sender = senderInput.value.trim() || "Anonymous";
+
+  if(!message) return;
+
+  sendBtn.disabled = true;
+  try {
+    if(activeSupabaseClient) {
+      const { error } = await activeSupabaseClient
+        .from("messages")
+        .insert([{ sender, message }]);
+      if(error) throw error;
+      showToast("Message sent!");
+    } else {
+      const existing = JSON.parse(localStorage.getItem("pahrixski_notes") || "[]");
+      existing.unshift({ sender, message, created_at: new Date().toISOString() });
+      localStorage.setItem("pahrixski_notes", JSON.stringify(existing.slice(0, 30)));
+      showToast("Message saved locally!");
+    }
+    senderInput.value = "";
+    messageInput.value = "";
+  } catch(error) {
+    showToast("Failed to send message");
+  } finally {
+    sendBtn.disabled = false;
+  }
+});
+
+/* VISITOR COUNTER - GLOBAL SUPABASE WITH LOCAL FALLBACK */
+
+async function initVisitorCounter(sbClient) {
+  const countEl = $("visitorCount");
+  const labelEl = $("visitorLabel");
+  const sessionKey = "pahrixskiSessionCounted";
+  const localKey = "pahrixskiVisits";
+
+  let localVisits = 1;
+  try {
+    const previous = Number(localStorage.getItem(localKey)) || 0;
+    localVisits = sessionStorage.getItem(sessionKey) ? Math.max(1, previous) : previous + 1;
+    localStorage.setItem(localKey, String(localVisits));
+    sessionStorage.setItem(sessionKey, "1");
+  } catch(error) {
+    localVisits = 1;
+  }
+
+  countEl.textContent = localVisits.toLocaleString("id-ID");
+
+  if(sbClient) {
+    try {
+      const { data, error } = await sbClient
+        .from("site_stats")
+        .select("id, visits")
+        .eq("id", 1)
+        .single();
+
+      if(!error && data) {
+        let globalVisits = Number(data.visits) || 0;
+        if(!sessionStorage.getItem("pahrixskiGlobalCounted")) {
+          globalVisits += 1;
+          const { error: updateErr } = await sbClient
+            .from("site_stats")
+            .update({ visits: globalVisits })
+            .eq("id", 1);
+          if(!updateErr) {
+            sessionStorage.setItem("pahrixskiGlobalCounted", "1");
+          }
+        }
+        countEl.textContent = globalVisits.toLocaleString("id-ID");
+        labelEl.textContent = "Total global visits";
+      }
+    } catch(error) {}
+  }
 }
 
 /* THEME SWITCHER */
@@ -1427,3 +1832,4 @@ document.addEventListener("visibilitychange",() => {
 
 </body>
 </html>
+```
