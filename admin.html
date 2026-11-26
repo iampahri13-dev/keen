@@ -532,6 +532,19 @@ for delete using (bucket_id = 'music-files');</pre>
       <!-- Daftar lagu dirender di sini -->
     </div>
   </div>
+
+  <!-- PESAN MASUK (QUICK NOTES) -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom: 10px;">
+      <i class="fa-regular fa-comment-dots"></i> Pesan Masuk (<span id="messageCount">0</span>)
+      <button type="button" class="back-link" id="refreshMessagesBtn" style="margin-left: auto; padding: 5px 10px; font-size: 10px;">
+        <i class="fa-solid fa-rotate-right"></i> Muat Ulang
+      </button>
+    </div>
+    <div class="song-list" id="messageList">
+      <!-- Daftar pesan dirender di sini -->
+    </div>
+  </div>
 </div>
 
 <script>
@@ -810,9 +823,113 @@ $("saveMoodBtn").addEventListener("click", () => {
   showToast("Mood badge diperbarui!");
 });
 
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = String(text ?? "");
+  return div.innerHTML;
+}
+
+function formatMessageTime(isoStr) {
+  if (!isoStr) return "";
+  try {
+    return new Date(isoStr).toLocaleString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch (e) {
+    return "";
+  }
+}
+
+async function loadMessages() {
+  let messages = [];
+
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient
+      .from("messages")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (!error && Array.isArray(data)) {
+      messages = data;
+    } else if (error) {
+      $("messageCount").textContent = "0";
+      $("messageList").innerHTML = `<div class="helper-text" style="text-align:center; padding: 12px;">Tabel <code>messages</code> belum dibuat atau belum ada izin baca.</div>`;
+      return;
+    }
+  } else {
+    try {
+      const localNotes = JSON.parse(localStorage.getItem("pahrixski_notes") || "[]");
+      messages = localNotes.map((item, idx) => ({
+        id: "local-note-" + idx,
+        sender: item.sender || "Anonymous",
+        message: item.message || "",
+        created_at: item.created_at || ""
+      }));
+    } catch (e) {
+      messages = [];
+    }
+  }
+
+  renderMessages(messages);
+}
+
+function renderMessages(messages) {
+  $("messageCount").textContent = messages.length;
+  const list = $("messageList");
+  list.innerHTML = "";
+
+  if (messages.length === 0) {
+    list.innerHTML = `<div class="helper-text" style="text-align:center; padding: 15px;">Belum ada pesan masuk.</div>`;
+    return;
+  }
+
+  messages.forEach((msg, index) => {
+    const item = document.createElement("div");
+    item.className = "song-item";
+    item.style.alignItems = "flex-start";
+    const timeLabel = formatMessageTime(msg.created_at);
+    item.innerHTML = `
+      <div class="song-info" style="white-space: normal;">
+        <div class="song-name">${escapeHtml(msg.sender || "Anonymous")}${timeLabel ? ` <span style="color: var(--muted); font-weight: 500; font-size: 10px;">· ${escapeHtml(timeLabel)}</span>` : ""}</div>
+        <div class="song-url" style="white-space: pre-wrap; overflow: visible; text-overflow: clip; color: var(--text); font-size: 11px; margin-top: 4px;">${escapeHtml(msg.message)}</div>
+      </div>
+      <button type="button" class="delete-btn" title="Hapus pesan" style="flex-shrink: 0;">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    `;
+
+    item.querySelector(".delete-btn").addEventListener("click", () => deleteMessage(msg.id, index));
+    list.appendChild(item);
+  });
+}
+
+async function deleteMessage(id, index) {
+  if (supabaseClient && !String(id).startsWith("local-note-")) {
+    const { error } = await supabaseClient.from("messages").delete().eq("id", id);
+    if (error) {
+      showToast("Gagal menghapus pesan");
+    } else {
+      showToast("Pesan dihapus!");
+      await loadMessages();
+    }
+  } else {
+    const localNotes = JSON.parse(localStorage.getItem("pahrixski_notes") || "[]");
+    localNotes.splice(index, 1);
+    localStorage.setItem("pahrixski_notes", JSON.stringify(localNotes));
+    showToast("Pesan dihapus!");
+    await loadMessages();
+  }
+}
+
+$("refreshMessagesBtn").addEventListener("click", loadMessages);
+
 initSupabase();
 loadSongs();
+loadMessages();
 </script>
 </body>
 </html>
-```
