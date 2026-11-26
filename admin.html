@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -586,21 +585,7 @@ async function uploadToSupabaseStorage(file, folder, statusEl, targetInput) {
   statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah <b>${file.name}</b> ke Supabase Storage...`;
 
   try {
-    // Pastikan bucket music-files tersedia (coba buat otomatis jika belum ada)
-    const { data: buckets, error: listErr } = await supabaseClient.storage.listBuckets();
-    if (!listErr && Array.isArray(buckets)) {
-      const exists = buckets.some(b => b.name === "music-files" || b.id === "music-files");
-      if (!exists) {
-        const { error: createErr } = await supabaseClient.storage.createBucket("music-files", {
-          public: true
-        });
-        if (createErr && !/already exists/i.test(createErr.message || "")) {
-          throw new Error("Bucket 'music-files' belum ada. Buat bucket 'music-files' (Public) di menu Storage Supabase.");
-        }
-      }
-    }
-
-    // Bersihkan nama file agar aman dipakai sebagai path storage
+    // Langsung unggah ke bucket 'music-files' tanpa memanggil listBuckets()
     const safeName = file.name
       .toLowerCase()
       .replace(/[^a-z0-9.\-_]+/g, "-")
@@ -630,11 +615,11 @@ async function uploadToSupabaseStorage(file, folder, statusEl, targetInput) {
   } catch (err) {
     const rawMsg = err?.message || "";
     const friendlyMsg = /bucket not found/i.test(rawMsg)
-      ? "Bucket 'music-files' belum dibuat. Buka menu Storage di Supabase -> klik New bucket -> beri nama 'music-files' lalu aktifkan Public bucket."
+      ? "Bucket 'music-files' belum dibuat atau URL/Key Supabase tidak cocok dengan project yang memiliki bucket 'music-files'."
       : rawMsg || "Gagal mengunggah file ke Supabase Storage";
 
     statusEl.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> ${friendlyMsg}</span>`;
-    showToast("Bucket 'music-files' belum ditemukan");
+    showToast(friendlyMsg);
   } finally {
     submitBtn.disabled = false;
   }
