@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -386,7 +386,7 @@ details summary {
         </button>
 
         <div class="helper-text" style="margin-top: 10px;">
-          <strong>Panduan Singkat Supabase:</strong> Jalankan SQL di bawah ini di <b>SQL Editor</b> Supabase untuk membuat tabel <code>songs</code> sekaligus bucket <code>music-files</code> yang publik:
+          <strong>Panduan Singkat Supabase:</strong> Jika SQL di bawah gagal membuat bucket karena izin sistem, buat bucket bernama <code>music-files</code> (centang <b>Public bucket</b>) di menu <b>Storage</b> sidebar kiri Supabase, lalu jalankan SQL tabel & policy di bawah:
           <button type="button" class="btn btn-secondary" id="copySqlBtn" style="margin-top: 8px; padding: 9px;">
             <i class="fa-regular fa-copy"></i> Salin Query SQL
           </button>
@@ -400,10 +400,6 @@ details summary {
 alter table songs enable row level security;
 drop policy if exists "Public Access" on songs;
 create policy "Public Access" on songs for all using (true) with check (true);
-
-insert into storage.buckets (id, name, public)
-values ('music-files', 'music-files', true)
-on conflict (id) do update set public = true;
 
 drop policy if exists "Public Storage Read" on storage.objects;
 create policy "Public Storage Read" on storage.objects
@@ -590,6 +586,20 @@ async function uploadToSupabaseStorage(file, folder, statusEl, targetInput) {
   statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah <b>${file.name}</b> ke Supabase Storage...`;
 
   try {
+    // Pastikan bucket music-files tersedia (coba buat otomatis jika belum ada)
+    const { data: buckets, error: listErr } = await supabaseClient.storage.listBuckets();
+    if (!listErr && Array.isArray(buckets)) {
+      const exists = buckets.some(b => b.name === "music-files" || b.id === "music-files");
+      if (!exists) {
+        const { error: createErr } = await supabaseClient.storage.createBucket("music-files", {
+          public: true
+        });
+        if (createErr && !/already exists/i.test(createErr.message || "")) {
+          throw new Error("Bucket 'music-files' belum ada. Buat bucket 'music-files' (Public) di menu Storage Supabase.");
+        }
+      }
+    }
+
     // Bersihkan nama file agar aman dipakai sebagai path storage
     const safeName = file.name
       .toLowerCase()
@@ -618,8 +628,13 @@ async function uploadToSupabaseStorage(file, folder, statusEl, targetInput) {
     statusEl.innerHTML = `<span style="color: var(--success);"><i class="fa-solid fa-check"></i> Berhasil diunggah ke Supabase Storage!</span>`;
     showToast("File berhasil diunggah ke Supabase!");
   } catch (err) {
-    statusEl.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Gagal upload: ${err.message || "Pastikan bucket 'music-files' sudah dibuat & publik"}.</span>`;
-    showToast("Gagal upload ke Supabase Storage");
+    const rawMsg = err?.message || "";
+    const friendlyMsg = /bucket not found/i.test(rawMsg)
+      ? "Bucket 'music-files' belum dibuat. Buka menu Storage di Supabase -> klik New bucket -> beri nama 'music-files' lalu aktifkan Public bucket."
+      : rawMsg || "Gagal mengunggah file ke Supabase Storage";
+
+    statusEl.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> ${friendlyMsg}</span>`;
+    showToast("Bucket 'music-files' belum ditemukan");
   } finally {
     submitBtn.disabled = false;
   }
