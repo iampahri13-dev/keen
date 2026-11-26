@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>pahrixski — Music Playlist Admin</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Library Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b1025;
+  --text: #f5f5ff;
+  --muted: #b2b8d3;
+  --accent: #b6a2ff;
+  --accent2: #8b83ff;
+  --danger: #ff6b8b;
+  --success: #79d7a5;
+  --glass: rgba(25, 31, 67, 0.65);
+  --glass-border: rgba(190, 181, 255, 0.22);
+  --input-bg: rgba(12, 16, 38, 0.65);
+  --shadow: rgba(0, 0, 0, 0.35);
+  --gradient: linear-gradient(110deg, #8da7ff, #c18aff, #70dce5);
+  --button-gradient: linear-gradient(115deg, #687ff0, #a16be5, #48bdcf);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 40px 16px 80px;
+  display: flex;
+  justify-content: center;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  background: 
+    radial-gradient(ellipse at 15% 10%, rgba(73, 87, 190, 0.25), transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgba(105, 54, 160, 0.2), transparent 48%),
+    var(--bg);
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  background: var(--gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  transition: 0.2s;
+}
+
+.back-link:hover {
+  border-color: var(--accent);
+}
+
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 35px var(--shadow);
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title i {
+  color: var(--accent);
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: var(--accent);
+}
+
+.file-upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.file-btn {
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--accent);
+  background: rgba(182, 162, 255, 0.1);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.file-btn:hover {
+  background: rgba(182, 162, 255, 0.2);
+}
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.2s;
+}
+
+.btn-primary {
+  color: white;
+  background: var(--button-gradient);
+  box-shadow: 0 6px 20px rgba(105, 110, 220, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+}
+
+.helper-text {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.helper-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Song List */
+.song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.song-item img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-name {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-url {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.delete-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 139, 0.3);
+  background: rgba(255, 107, 139, 0.1);
+  color: var(--danger);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Status Badge */
+.badge {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.badge.supabase {
+  background: rgba(121, 215, 165, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(121, 215, 165, 0.3);
+}
+
+.badge.local {
+  background: rgba(182, 162, 255, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(182, 162, 255, 0.3);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translate(-50%, -20px);
+  padding: 10px 18px;
+  border-radius: 30px;
+  background: rgba(14, 19, 45, 0.95);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.25s;
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+details summary {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  outline: none;
+}
+
+.sql-box {
+  background: #070a18;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 10px;
+  color: #a5b4fc;
+  overflow-x: auto;
+  margin-top: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+  <div class="header">
+    <h1><i class="fa-solid fa-sliders"></i> Playlist Manager</h1>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Lihat Web</a>
+  </div>
+
+  <!-- KONFIGURASI SUPABASE (OPSIONAL) -->
+  <div class="card">
+    <div class="card-title">
+      <i class="fa-solid fa-database"></i> Koneksi Database
+      <span class="badge local" id="dbModeBadge">Mode Lokal</span>
+    </div>
+    
+    <details>
+      <summary>Atur Supabase (Agar tersimpan Online untuk semua pengunjung)</summary>
+      <div style="margin-top: 12px;">
+        <div class="form-group">
+          <label>Supabase Project URL</label>
+          <input type="url" id="sbUrl" placeholder="https://xyzcompany.supabase.co">
+        </div>
+        <div class="form-group">
+          <label>Supabase Anon Public Key</label>
+          <input type="password" id="sbKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+        </div>
+        <button type="button" class="btn btn-secondary" id="saveSbBtn">
+          <i class="fa-solid fa-plug"></i> Simpan & Hubungkan Supabase
+        </button>
+
+        <div class="helper-text" style="margin-top: 10px;">
+          <strong>Panduan Singkat Supabase:</strong> Buat tabel bernama <code>songs</code> di SQL Editor Supabase dengan query ini:
+          <pre class="sql-box">create table songs (
+  id bigint generated by default as identity primary key,
+  name text not null,
+  src text not null,
+  thumb text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+alter table songs enable row level security;
+create policy "Public Access" on songs for all using (true) with check (true);</pre>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- FORM TAMBAH LAGU -->
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-circle-plus"></i> Tambah Lagu Baru</div>
+    
+    <form id="addSongForm">
+      <div class="form-group">
+        <label>Judul Lagu & Artis</label>
+        <input type="text" id="songName" placeholder="Contoh: Message In A Bottle - Taylor Swift" required>
+      </div>
+
+      <div class="form-group">
+        <label>Link Audio MP3 (Catbox.moe)</label>
+        <div class="file-upload-row">
+          <input type="url" id="songSrc" placeholder="https://files.catbox.moe/xxxxxx.mp3" required>
+          <label class="file-btn" title="Upload otomatis ke Catbox.moe">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+            <input type="file" id="audioFileInput" accept="audio/*" hidden>
+          </label>
+        </div>
+        <div class="helper-text" id="audioUploadStatus">
+          Klik tombol <b>Upload</b> untuk unggah langsung ke Catbox.moe, atau paste link dari <a href="https://catbox.moe" target="_blank">catbox.moe</a>.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Link Cover Album (Gambar JPG/PNG)</label>
+        <div class="file-upload-row">
+          <input type="url" id="songThumb" placeholder="https://files.catbox.moe/xxxxxx.jpg" required>
+          <label class="file-btn" title="Upload cover ke Catbox.moe">
+            <i class="fa-solid fa-image"></i> Upload
+            <input type="file" id="imageFileInput" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="helper-text" id="imageUploadStatus">
+          Unggah gambar cover album atau paste link gambar.
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fa-solid fa-floppy-disk"></i> Simpan ke Playlist
+      </button>
+    </form>
+  </div>
+
+  <!-- DAFTAR LAGU SAAT INI -->
+  <div class="card">
+    <div class="card-title">
+      <i class="fa-solid fa-music"></i> Daftar Lagu Aktif (<span id="songCount">0</span>)
+    </div>
+    <div class="song-list" id="songList">
+      <!-- Daftar lagu dirender di sini -->
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function showToast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// Default playlist bawaan
+const defaultPlaylist = [
+  {
+    id: "def-1",
+    src: "https://files.catbox.moe/6rl47b.mp3",
+    name: "Message In A Bottle",
+    thumb: "https://files.catbox.moe/nir50b.jpg"
+  },
+  {
+    id: "def-2",
+    src: "https://files.catbox.moe/lrb13c.mp3",
+    name: "Enchanted",
+    thumb: "https://files.catbox.moe/eq0znl.jpg"
+  },
+  {
+    id: "def-3",
+    src: "https://files.catbox.moe/wcfnir.mp3",
+    name: "All Too Well",
+    thumb: "https://files.catbox.moe/lnj0b7.jpg"
+  }
+];
+
+let supabaseClient = null;
+
+// Cek apakah konfigurasi Supabase sudah disimpan
+function initSupabase() {
+  const url = localStorage.getItem("pahrixski_sb_url") || "";
+  const key = localStorage.getItem("pahrixski_sb_key") || "";
+  $("sbUrl").value = url;
+  $("sbKey").value = key;
+
+  if (url && key && window.supabase) {
+    try {
+      supabaseClient = window.supabase.createClient(url, key);
+      $("dbModeBadge").textContent = "Supabase Online";
+      $("dbModeBadge").className = "badge supabase";
+    } catch (e) {
+      supabaseClient = null;
+    }
+  } else {
+    supabaseClient = null;
+    $("dbModeBadge").textContent = "Mode Lokal";
+    $("dbModeBadge").className = "badge local";
+  }
+}
+
+$("saveSbBtn").addEventListener("click", () => {
+  const url = $("sbUrl").value.trim();
+  const key = $("sbKey").value.trim();
+  if (!url || !key) {
+    localStorage.removeItem("pahrixski_sb_url");
+    localStorage.removeItem("pahrixski_sb_key");
+    initSupabase();
+    loadSongs();
+    showToast("Beralih ke Mode Lokal");
+    return;
+  }
+  localStorage.setItem("pahrixski_sb_url", url);
+  localStorage.setItem("pahrixski_sb_key", key);
+  initSupabase();
+  loadSongs();
+  showToast("Konfigurasi Supabase disimpan!");
+});
+
+// Fungsi Upload ke Catbox.moe menggunakan CORS Proxy
+async function uploadToCatbox(file, statusEl, targetInput) {
+  if (!file) return;
+  statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah <b>${file.name}</b> ke Catbox.moe...`;
+
+  const formData = new FormData();
+  formData.append("reqtype", "fileupload");
+  formData.append("fileToUpload", file);
+
+  try {
+    // Menggunakan corsproxy.io untuk meneruskan request ke catbox.moe dari browser
+    const response = await fetch("https://corsproxy.io/?https://catbox.moe/user/api.php", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) throw new Error("Gagal terhubung ke Catbox");
+    const resultUrl = (await response.text()).trim();
+
+    if (resultUrl.startsWith("http")) {
+      targetInput.value = resultUrl;
+      statusEl.innerHTML = `<span style="color: var(--success);"><i class="fa-solid fa-check"></i> Berhasil diunggah! Link otomatis terisi.</span>`;
+      showToast("File berhasil diunggah ke Catbox!");
+    } else {
+      throw new Error("Respon tidak valid");
+    }
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Upload otomatis diblokir browser. Silakan upload manual di <a href="https://catbox.moe" target="_blank">catbox.moe</a> lalu paste link-nya di atas.</span>`;
+    showToast("Gagal upload otomatis, silakan paste link manual");
+  }
+}
+
+$("audioFileInput").addEventListener("change", (e) => {
+  uploadToCatbox(e.target.files[0], $("audioUploadStatus"), $("songSrc"));
+});
+
+$("imageFileInput").addEventListener("change", (e) => {
+  uploadToCatbox(e.target.files[0], $("imageUploadStatus"), $("songThumb"));
+});
+
+// Memuat daftar lagu (dari Supabase jika aktif, atau LocalStorage)
+async function loadSongs() {
+  let songs = [];
+
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient
+      .from("songs")
+      .select("*")
+      .order("id", { ascending: true });
+
+    if (!error && data) {
+      songs = data;
+    } else {
+      showToast("Gagal memuat dari Supabase, cek tabel 'songs'");
+    }
+  } else {
+    const saved = localStorage.getItem("pahrixski_playlist");
+    songs = saved ? JSON.parse(saved) : defaultPlaylist;
+  }
+
+  renderSongs(songs);
+}
+
+function renderSongs(songs) {
+  $("songCount").textContent = songs.length;
+  const list = $("songList");
+  list.innerHTML = "";
+
+  if (songs.length === 0) {
+    list.innerHTML = `<div class="helper-text" style="text-align:center; padding: 15px;">Belum ada lagu di playlist.</div>`;
+    return;
+  }
+
+  songs.forEach((song, index) => {
+    const item = document.createElement("div");
+    item.className = "song-item";
+    item.innerHTML = `
+      <img src="${song.thumb}" alt="cover" onerror="this.src='https://placehold.co/100x100/191f43/b6a2ff?text=Music'">
+      <div class="song-info">
+        <div class="song-name">${song.name}</div>
+        <div class="song-url">${song.src}</div>
+      </div>
+      <button type="button" class="delete-btn" title="Hapus lagu" data-id="${song.id}" data-index="${index}">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    `;
+
+    item.querySelector(".delete-btn").addEventListener("click", () => deleteSong(song.id, index));
+    list.appendChild(item);
+  });
+}
+
+// Tambah lagu baru
+$("addSongForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const submitBtn = $("submitBtn");
+  submitBtn.disabled = true;
+
+  const newSong = {
+    name: $("songName").value.trim(),
+    src: $("songSrc").value.trim(),
+    thumb: $("songThumb").value.trim()
+  };
+
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from("songs").insert([newSong]);
+    if (error) {
+      showToast("Gagal menyimpan ke Supabase: " + error.message);
+    } else {
+      showToast("Lagu ditambahkan ke Supabase!");
+      $("addSongForm").reset();
+      await loadSongs();
+    }
+  } else {
+    const saved = localStorage.getItem("pahrixski_playlist");
+    const songs = saved ? JSON.parse(saved) : [...defaultPlaylist];
+    songs.push({ id: "local-" + Date.now(), ...newSong });
+    localStorage.setItem("pahrixski_playlist", JSON.stringify(songs));
+    showToast("Lagu ditambahkan ke Playlist!");
+    $("addSongForm").reset();
+    renderSongs(songs);
+  }
+
+  submitBtn.disabled = false;
+});
+
+// Hapus lagu
+async function deleteSong(id, index) {
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from("songs").delete().eq("id", id);
+    if (error) {
+      showToast("Gagal menghapus lagu");
+    } else {
+      showToast("Lagu dihapus!");
+      await loadSongs();
+    }
+  } else {
+    const saved = localStorage.getItem("pahrixski_playlist");
+    const songs = saved ? JSON.parse(saved) : [...defaultPlaylist];
+    songs.splice(index, 1);
+    localStorage.setItem("pahrixski_playlist", JSON.stringify(songs));
+    showToast("Lagu dihapus!");
+    renderSongs(songs);
+  }
+}
+
+initSupabase();
+loadSongs();
+</script>
+</body>
+</html>

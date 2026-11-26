@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Library Supabase JS agar terhubung dengan admin.html -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
@@ -1110,7 +1111,7 @@ $("shareBtn").addEventListener("click",async () => {
 const audio = $("bgAudio");
 const player = $("musicPlayer");
 
-const playlist = [
+const defaultPlaylist = [
   {
     src:"https://files.catbox.moe/6rl47b.mp3",
     name:"Message In A Bottle",
@@ -1127,6 +1128,41 @@ const playlist = [
     thumb:"https://files.catbox.moe/lnj0b7.jpg"
   }
 ];
+
+let playlist = [...defaultPlaylist];
+
+// Mengambil daftar lagu dari Supabase atau LocalStorage jika ada
+async function initDynamicPlaylist() {
+  // Isi URL & Anon Key Supabase Anda di sini agar pengunjung lain juga melihat lagu baru
+  const HARDCODED_SB_URL = ""; 
+  const HARDCODED_SB_KEY = "";
+
+  const sbUrl = HARDCODED_SB_URL || localStorage.getItem("pahrixski_sb_url");
+  const sbKey = HARDCODED_SB_KEY || localStorage.getItem("pahrixski_sb_key");
+
+  if (sbUrl && sbKey && window.supabase) {
+    try {
+      const sb = window.supabase.createClient(sbUrl, sbKey);
+      const { data, error } = await sb.from("songs").select("*").order("id", { ascending: true });
+      if (!error && data && data.length > 0) {
+        playlist = data;
+        loadSong(0, false);
+        return;
+      }
+    } catch (e) {}
+  }
+
+  try {
+    const localSaved = localStorage.getItem("pahrixski_playlist");
+    if (localSaved) {
+      const parsed = JSON.parse(localSaved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        playlist = parsed;
+        loadSong(0, false);
+      }
+    }
+  } catch (e) {}
+}
 
 let current = 0;
 const playBtn = $("playBtn");
@@ -1227,6 +1263,7 @@ volumeControl.addEventListener("input",() => {
 });
 
 loadSong(0,false);
+initDynamicPlaylist();
 
 /* VISITOR COUNTER - LOCAL BROWSER */
 
